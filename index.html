@@ -1,58 +1,234 @@
-<div id="loginModal" class="modal">
-  <div class="panel modal-box">
-    <button onclick="closeLogin()">×</button>
-    <h2>ورود به رهام AI</h2>
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>رهام AI</title>
+<style>
+@font-face{font-family:vazir;src:url("Vazirmatn-variable.woff2")}
+*{box-sizing:border-box;font-family:vazir,Arial}
+:root{--bg:#080b18;--card:#121a32dd;--text:#f4f7ff;--muted:#aab5cc;--blue:#2563eb;--purple:#8b5cf6}
+body{margin:0;background:radial-gradient(circle at 10% 10%,#2563eb55,transparent 35%),radial-gradient(circle at 90% 85%,#8b5cf655,transparent 35%),var(--bg);color:var(--text);min-height:100vh}
+body.light{--bg:#edf4ff;--card:#ffffffbb;--text:#172554;--muted:#52617c}
+button,input{font:inherit}button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+aside{width:260px;padding:24px;background:#080d20dd;border-left:1px solid #ffffff22;backdrop-filter:blur(25px);position:sticky;top:0;height:100vh}
+body.light aside{background:#ffffffcc}
+.logo{text-align:center;font-size:26px;font-weight:bold;margin:10px 0 35px}.logo b{color:#8b5cf6}
+nav button{display:block;width:100%;padding:14px;margin:7px 0;border:0;border-radius:14px;text-align:right;background:transparent;color:var(--muted)}
+nav button:hover,nav button.active{background:linear-gradient(135deg,#2563eb,#8b5cf6);color:white}
+main{width:100%;max-width:1450px;margin:auto;padding:25px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+header h1{font-size:24px}.actions{display:flex;gap:10px;align-items:center}
+.panel{background:var(--card);border:1px solid #ffffff25;border-radius:25px;box-shadow:0 20px 60px #0005;backdrop-filter:blur(25px)}
+.btn,.badge{padding:12px 18px;border-radius:13px;border:0}
+.btn{background:linear-gradient(135deg,#2563eb,#8b5cf6);color:white;font-weight:bold}
+.badge{border:1px solid #ffffff28;color:var(--text)}
+.hero{display:grid;grid-template-columns:1.5fr .5fr;gap:20px}
+.hero-main{padding:40px;min-height:360px}
+.hero h2{font-size:clamp(2.5rem,6vw,5rem);line-height:1.35}
+.gradient{color:#a78bfa}.muted{color:var(--muted);line-height:2}
+.profile{text-align:center;padding:35px}
+.avatar{width:105px;height:105px;margin:auto;border-radius:30px;display:grid;place-items:center;font-size:45px;font-weight:bold;background:linear-gradient(135deg,#06b6d4,#8b5cf6)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+.card{padding:22px}.card h3{margin-top:10px}.card p{color:var(--muted);line-height:2}
+section{display:none}section.active{display:block}
+.title{display:flex;justify-content:space-between;align-items:center;margin:30px 0 15px}
+.blogs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.blog{overflow:hidden}.blog img{width:100%;height:160px;object-fit:cover}.blog div{padding:20px}.blog p{color:var(--muted);line-height:2}
+.chat{height:500px;display:flex;flex-direction:column}.log{flex:1;overflow:auto;padding:20px}
+.msg{max-width:80%;padding:13px 17px;margin:10px 0;border-radius:17px;line-height:2}.bot{background:#172d59}.user{background:#55318c;margin-right:auto}
+form{display:flex;gap:10px;padding:15px;border-top:1px solid #ffffff22}
+input{width:100%;padding:13px;border-radius:12px;border:1px solid #64748b;background:#02061788;color:white;outline:none}
+body.light input{background:white;color:#172554}
+.modal{position:fixed;inset:0;display:none;place-items:center;background:#000b;padding:20px;z-index:20}.modal.show{display:grid}
+.modal-box{width:min(450px,100%);padding:28px}.modal-box input{margin:7px 0 13px}.close{float:left;background:transparent;border:0;color:var(--text);font-size:25px}
+.users{margin-top:20px}.user{padding:15px;margin:8px 0;background:#0003;border-radius:13px}
+.mobile{display:none}
+@media(max-width:900px){aside{position:fixed;right:-280px;z-index:10;transition:.3s}aside.open{right:0}.mobile{display:block}.hero{grid-template-columns:1fr}.blogs,.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){main{padding:13px}.blogs,.grid{grid-template-columns:1fr}.hero-main{padding:25px}.hero h2{font-size:2.6rem}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside id="side">
+<div class="logo">رهام <b>AI</b></div>
+<nav>
+<button class="active" onclick="page('home',this)">⌂ داشبورد</button>
+<button onclick="page('ai',this)">✦ دستیار هوش مصنوعی</button>
+<button onclick="page('blogs',this)">▣ وبلاگ‌ها</button>
+<button onclick="page('plans',this)">◇ اشتراک‌ها</button>
+<button onclick="page('admin',this)">◈ پنل مدیریت</button>
+<button onclick="theme()">◐ تغییر تم</button>
+<button id="logout" style="display:none" onclick="logout()">⎋ خروج</button>
+</nav>
+</aside>
 
-    <input id="loginName" placeholder="نام و نام خانوادگی">
-    <input id="loginEmail" type="email" placeholder="ایمیل">
-    <input id="loginPassword" type="password" placeholder="رمز عبور">
-    <input id="loginPhone" type="tel" placeholder="شماره موبایل">
+<main>
+<header>
+<div class="actions"><button class="btn mobile" onclick="menu()">☰</button><h1 id="title">داشبورد هوشمند</h1></div>
+<div class="actions"><span class="badge" id="status">مهمان</span><button class="btn" onclick="openLogin()">ورود</button></div>
+</header>
 
-    <button onclick="loginUser()">ورود / ثبت‌نام</button>
-    <p id="loginMessage"></p>
-  </div>
+<section id="home" class="active">
+<div class="hero">
+<div class="panel hero-main">
+<p class="muted">پلتفرم هوش مصنوعی نسل جدید</p>
+<h2>ایده‌هایت را با <span class="gradient">رهام</span> اجرا کن</h2>
+<p class="muted">گفت‌وگو، تولید محتوا، ساخت تصویر و برنامه‌نویسی در یک محیط حرفه‌ای و شیشه‌ای.</p>
+<button class="btn" onclick="page('ai')">شروع کار</button>
+</div>
+<div class="panel profile"><div class="avatar">ر</div><h2>رهام</h2><p class="muted">سازنده پلتفرم هوش مصنوعی</p><h3>۱۵ سال</h3><p class="muted">دسترسی شبانه‌روزی</p></div>
+</div>
+<div class="grid">
+<div class="panel card"><h3>گفت‌وگوی هوشمند</h3><p>پاسخ‌گویی و تولید محتوای فارسی.</p></div>
+<div class="panel card"><h3>ساخت تصویر</h3><p>تبدیل ایده‌های متنی به تصویر.</p></div>
+<div class="panel card"><h3>کمک برنامه‌نویسی</h3><p>توضیح کد و رفع خطا.</p></div>
+</div>
+</section>
+
+<section id="ai">
+<div class="title"><h2>دستیار هوش مصنوعی</h2><button class="btn" onclick="clearChat()">پاک‌سازی</button></div>
+<div class="panel chat"><div id="log" class="log"><div class="msg bot">سلام! من دستیار رهام هستم. چطور کمکتان کنم؟</div></div>
+<form onsubmit="event.preventDefault();send()"><input id="message" placeholder="درخواست خود را بنویسید..."><button class="btn">ارسال</button></form></div>
+</section>
+
+<section id="blogs">
+<div class="title"><h2>وبلاگ و آموزش</h2></div>
+<div class="blogs">
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/blue%20violet%20AI?width=800&height=500&nologo=true"><div><h3>مدل‌های زبانی بزرگ</h3><p>مدل‌های زبانی برای خلاصه‌سازی، ترجمه، تحلیل و تولید محتوا استفاده می‌شوند.</p></div></article>
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/AI%20image?width=800&height=500&nologo=true"><div><h3>ساخت تصویر با AI</h3><p>با تعیین سوژه، نور و سبک می‌توانید تصاویر دقیق و خلاقانه تولید کنید.</p></div></article>
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/cybersecurity?width=800&height=500&nologo=true"><div><h3>امنیت وب</h3><p>HTTPS، اعتبارسنجی ورودی و کنترل دسترسی برای امنیت سایت ضروری هستند.</p></div></article>
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/AI%20coding?width=800&height=500&nologo=true"><div><h3>برنامه‌نویسی با AI</h3><p>دستیار هوشمند در توضیح کد، رفع خطا و ساخت نمونه اولیه کمک می‌کند.</p></div></article>
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/AI%20education?width=800&height=500&nologo=true"><div><h3>یادگیری با هوش مصنوعی</h3><p>برای برنامه‌ریزی مطالعه و توضیح مفاهیم سخت از هوش مصنوعی استفاده کنید.</p></div></article>
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/futuristic%20AI?width=800&height=500&nologo=true"><div><h3>آینده دستیارها</h3><p>دستیارهای آینده متن، تصویر و برنامه‌ریزی روزانه را ترکیب می‌کنند.</p></div></article>
+</div>
+</section>
+
+<section id="plans">
+<div class="title"><h2>اشتراک‌ها</h2></div>
+<div class="grid">
+<div class="panel card"><h2>رایگان</h2><p class="muted">گفت‌وگوی پایه و وبلاگ‌ها</p><button class="btn">فعال</button></div>
+<div class="panel card"><h2>پریمیوم</h2><p class="muted">دسترسی بیشتر و تولید تصویر</p><button class="btn" onclick="buy()">ارتقا</button></div>
+<div class="panel card"><h2>حرفه‌ای</h2><p class="muted">دسترسی نامحدود</p><button class="btn" onclick="buy()">خرید</button></div>
+</div>
+</section>
+
+<section id="admin">
+<div class="panel card"><h2>پنل مدیریت</h2><p id="account">فقط مدیر می‌تواند کاربران را ببیند.</p><div id="users" class="users"></div></div>
+</section>
+</main>
+</div>
+
+<div id="modal" class="modal">
+<div class="panel modal-box">
+<button class="close" onclick="closeLogin()">×</button>
+<h2>ورود به رهام AI</h2>
+<input id="name" placeholder="نام و نام خانوادگی">
+<input id="email" type="email" placeholder="ایمیل">
+<input id="password" type="password" placeholder="رمز عبور">
+<input id="phone" type="tel" placeholder="شماره موبایل">
+<button class="btn" style="width:100%" onclick="login()">ورود / ثبت‌نام</button>
+<p id="error"></p>
+</div>
 </div>
 
 <script>
-function loginUser() {
-  const name = document.getElementById("loginName").value.trim();
-  const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value;
-  const phone = document.getElementById("loginPhone").value.trim();
+let current=null;
+let users=JSON.parse(localStorage.getItem("roham_users")||"[]");
 
-  if (!name || !email || !password || !phone) {
-    document.getElementById("loginMessage").textContent =
-      "همه فیلدها را کامل کنید.";
-    return;
-  }
+function menu(){document.getElementById("side").classList.toggle("open")}
+function theme(){document.body.classList.toggle("light")}
+function openLogin(){document.getElementById("modal").classList.add("show")}
+function closeLogin(){document.getElementById("modal").classList.remove("show")}
 
-  if (email === "roham@rohamai.ir" && password === "roham123") {
-    currentUser = {
-      name: "رهام",
-      email,
-      phone,
-      role: "admin",
-      plan: "نامحدود"
-    };
-  } else {
-    currentUser = {
-      name,
-      email,
-      phone,
-      role: "user",
-      plan: "رایگان"
-    };
+function page(id,btn){
+ document.querySelectorAll("section").forEach(x=>x.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+ if(btn)btn.classList.add("active");
+ document.getElementById("title").textContent={
+  home:"داشبورد هوشمند",ai:"دستیار هوش مصنوعی",
+  blogs:"وبلاگ‌ها",plans:"اشتراک‌ها",admin:"پنل مدیریت"
+ }[id];
+ if(id==="admin")showUsers();
+}
 
-    const users = JSON.parse(
-      localStorage.getItem("roham_users") || "[]"
-    );
+function login(){
+ const name=document.getElementById("name").value.trim();
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ const phone=document.getElementById("phone").value.trim();
 
-    users.push(currentUser);
-    localStorage.setItem("roham_users", JSON.stringify(users));
-  }
+ if(!name||!email||!password||!phone){
+  document.getElementById("error").textContent="همه فیلدها را کامل کنید.";
+  return;
+ }
 
-  document.getElementById("status").textContent = currentUser.name;
-  document.getElementById("logoutBtn").style.display = "block";
-  closeLogin();
+ if(email==="roham@rohamai.ir"&&password==="roham123"){
+  current={name:"رهام",email,phone,role:"admin",plan:"نامحدود"};
+ }else{
+  current={name,email,phone,role:"user",plan:"رایگان"};
+  users.push(current);
+  localStorage.setItem("roham_users",JSON.stringify(users));
+ }
+
+ document.getElementById("status").textContent=current.name;
+ document.getElementById("logout").style.display="block";
+ document.getElementById("account").textContent=current.name+" | "+current.email;
+ closeLogin();
+}
+
+function logout(){
+ current=null;
+ document.getElementById("status").textContent="مهمان";
+ document.getElementById("logout").style.display="none";
+}
+
+function showUsers(){
+ const box=document.getElementById("users");
+ if(!current||current.role!=="admin"){
+  box.innerHTML="فقط مدیر می‌تواند کاربران را ببیند.";
+  return;
+ }
+ box.innerHTML=users.map(x=>`
+ <div class="user">
+ <b>${x.name}</b><br>
+ ایمیل: ${x.email}<br>
+ شماره: ${x.phone}<br>
+ اشتراک: ${x.plan}
+ </div>`).join("");
+}
+
+function clearChat(){
+ document.getElementById("log").innerHTML='<div class="msg bot">گفت‌وگو پاک شد.</div>';
+}
+
+function send(){
+ const input=document.getElementById("message");
+ const text=input.value.trim();
+ const log=document.getElementById("log");
+ if(!text)return;
+
+ log.innerHTML+=`<div class="msg user">${text}</div>`;
+ let answer="درخواست شما دریافت شد. پاسخ آماده می‌شود.";
+
+ if(text.includes("سلام"))answer="سلام! من دستیار رهام هستم.";
+ else if(text.includes("کد"))answer="می‌توانم در HTML، CSS و JavaScript کمکتان کنم.";
+ else if(text.includes("وبلاگ"))answer="در بخش وبلاگ مطالب آموزشی کامل قرار دارد.";
+ else if(/عکس|تصویر|بساز|بکش/.test(text)){
+  const url="https://image.pollinations.ai/prompt/"+encodeURIComponent(text)+"?width=768&height=512&nologo=true";
+  answer=`تصویر آماده شد:<br><img src="${url}" style="max-width:100%;border-radius:15px">`;
+ }
+
+ setTimeout(()=>log.innerHTML+=`<div class="msg bot">${answer}</div>`,500);
+ input.value="";
+}
+
+function buy(){
+ if(!current)openLogin();
+ else alert("درگاه پرداخت در نسخه نمایشی است.");
 }
 </script>
+</body>
+</html>
