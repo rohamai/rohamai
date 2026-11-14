@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>رهام AI</title>
+
 <style>
-@font-face{font-family:vazir;src:url("Vazirmatn-variable.woff2")}
-*{box-sizing:border-box;font-family:vazir,Arial}
+@font-face{font-family:Vazir;src:url("Vazirmatn-variable.woff2")}
+*{box-sizing:border-box;font-family:Vazir,Arial}
 :root{--bg:#080b18;--card:#121a32dd;--text:#f4f7ff;--muted:#aab5cc}
-body{margin:0;background:radial-gradient(circle at 10% 10%,#2563eb55,transparent 35%),radial-gradient(circle at 90% 85%,#8b5cf655,transparent 35%),var(--bg);color:var(--text);min-height:100vh}
+body{margin:0;color:var(--text);background:radial-gradient(circle at 10% 10%,#2563eb55,transparent 35%),radial-gradient(circle at 90% 85%,#8b5cf655,transparent 35%),var(--bg);min-height:100vh}
 body.light{--bg:#edf4ff;--card:#ffffffcc;--text:#172554;--muted:#52617c}
 button,input{font:inherit}button{cursor:pointer}
 .app{display:flex;min-height:100vh}
@@ -27,7 +28,7 @@ header h1{font-size:24px}.actions{display:flex;gap:10px;align-items:center}
 .hero-main{padding:40px;min-height:360px}.hero h2{font-size:clamp(2.5rem,6vw,5rem);line-height:1.35}
 .gradient{color:#a78bfa}.muted{color:var(--muted);line-height:2}
 .profile{text-align:center;padding:35px}.avatar{width:105px;height:105px;margin:auto;border-radius:30px;display:grid;place-items:center;font-size:45px;font-weight:bold;background:linear-gradient(135deg,#06b6d4,#8b5cf6)}
-.grid,.blogs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+.grid,.blogs,.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
 .card{padding:22px}.card p,.blog p{color:var(--muted);line-height:2}
 section{display:none}section.active{display:block}
 .title{display:flex;justify-content:space-between;align-items:center;margin:30px 0 15px}
@@ -37,25 +38,34 @@ section{display:none}section.active{display:block}
 form{display:flex;gap:10px;padding:15px;border-top:1px solid #ffffff22}
 input{width:100%;padding:13px;border-radius:12px;border:1px solid #64748b;background:#02061788;color:white;outline:none}
 body.light input{background:white;color:#172554}
+.price-card{padding:25px;text-align:center}
+.price-card.featured{border:2px solid #8b5cf6;transform:translateY(-8px);box-shadow:0 0 35px #8b5cf655}
+.price{color:#a78bfa;font-size:30px;font-weight:bold;margin:18px 0}
+.features{padding:0;list-style:none;color:var(--muted);line-height:2.2;text-align:right}
+.feature-chart{padding:25px;margin-top:25px}
+.bar{margin:18px 0}.bar-title{display:flex;justify-content:space-between;color:var(--muted)}
+.bar-line{height:12px;margin-top:7px;border-radius:20px;background:#ffffff18;overflow:hidden}
+.bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#2563eb,#8b5cf6)}
 .modal{position:fixed;inset:0;display:none;place-items:center;background:#000b;padding:20px;z-index:200}.modal.show{display:grid}
 .modal-box{width:min(450px,100%);padding:28px}.modal-box input{margin:7px 0 13px}.close{float:left;background:transparent;border:0;color:var(--text);font-size:25px}
-.mobile{display:none}
-.user{padding:15px;margin:8px 0;background:#0003;border-radius:13px}
+.mobile{display:none}.user{padding:15px;margin:8px 0;background:#0003;border-radius:13px}
 @media(max-width:900px){
  aside{position:fixed;top:0;right:-280px;width:260px;height:100vh;transition:right .3s ease}
  aside.open{right:0!important}
  .mobile{display:block;z-index:101}
  .hero{grid-template-columns:1fr}
- .blogs,.grid{grid-template-columns:1fr 1fr}
+ .blogs,.grid,.price-grid{grid-template-columns:1fr 1fr}
  main{padding:18px}
 }
 @media(max-width:600px){
- .blogs,.grid{grid-template-columns:1fr}
+ .blogs,.grid,.price-grid{grid-template-columns:1fr}
  .hero-main{padding:25px}
  .hero h2{font-size:2.6rem}
+ .price-card.featured{transform:none}
 }
 </style>
 </head>
+
 <body>
 <div class="app">
 
@@ -65,7 +75,7 @@ body.light input{background:white;color:#172554}
 <button class="active" onclick="page('home',this)">⌂ داشبورد</button>
 <button onclick="page('ai',this)">✦ دستیار هوش مصنوعی</button>
 <button onclick="page('blogs',this)">▣ وبلاگ‌ها</button>
-<button onclick="page('plans',this)">◇ اشتراک‌ها</button>
+<button onclick="page('plans',this)">◇ دوره‌ها و قیمت‌ها</button>
 <button onclick="page('admin',this)">◈ پنل مدیریت</button>
 <button onclick="theme()">◐ تغییر تم</button>
 <button id="logout" style="display:none" onclick="logout()">⎋ خروج</button>
@@ -132,11 +142,68 @@ body.light input{background:white;color:#172554}
 </section>
 
 <section id="plans">
-<div class="title"><h2>اشتراک‌ها</h2></div>
-<div class="grid">
-<div class="panel card"><h2>رایگان</h2><p>گفت‌وگوی پایه و وبلاگ‌ها</p><button class="btn">فعال</button></div>
-<div class="panel card"><h2>پریمیوم</h2><p>دسترسی بیشتر و تولید تصویر</p><button class="btn" onclick="buy()">ارتقا</button></div>
-<div class="panel card"><h2>حرفه‌ای</h2><p>دسترسی نامحدود</p><button class="btn" onclick="buy()">خرید</button></div>
+<div class="title"><h2>دوره‌ها و قیمت‌ها</h2><span class="badge">پلن‌های ویژه</span></div>
+
+<div class="price-grid">
+<div class="panel price-card">
+<h2>رایگان</h2>
+<div class="price">۰ تومان</div>
+<ul class="features">
+<li>✓ گفت‌وگوی پایه</li>
+<li>✓ دسترسی به وبلاگ‌ها</li>
+<li>✓ آموزش‌های رایگان</li>
+<li>✕ امکانات حرفه‌ای</li>
+</ul>
+<button class="btn">پلن فعلی</button>
+</div>
+
+<div class="panel price-card featured">
+<h2>پریمیوم</h2>
+<div class="price">۲۹۹,۰۰۰ تومان</div>
+<ul class="features">
+<li>✓ گفت‌وگوی پیشرفته</li>
+<li>✓ تولید تصویر</li>
+<li>✓ دسترسی به دوره‌ها</li>
+<li>✓ پشتیبانی ویژه</li>
+</ul>
+<button class="btn" onclick="buy()">ارتقا</button>
+</div>
+
+<div class="panel price-card">
+<h2>حرفه‌ای</h2>
+<div class="price">۶۹۹,۰۰۰ تومان</div>
+<ul class="features">
+<li>✓ دسترسی نامحدود</li>
+<li>✓ تولید تصویر حرفه‌ای</li>
+<li>✓ همه دوره‌ها</li>
+<li>✓ پشتیبانی اختصاصی</li>
+</ul>
+<button class="btn" onclick="buy()">خرید پلن</button>
+</div>
+</div>
+
+<div class="panel feature-chart">
+<h2>نمودار امکانات سایت</h2>
+
+<div class="bar">
+<div class="bar-title"><span>گفت‌وگوی هوشمند</span><b>۹۵٪</b></div>
+<div class="bar-line"><div class="bar-fill" style="width:95%"></div></div>
+</div>
+
+<div class="bar">
+<div class="bar-title"><span>تولید تصویر</span><b>۸۵٪</b></div>
+<div class="bar-line"><div class="bar-fill" style="width:85%"></div></div>
+</div>
+
+<div class="bar">
+<div class="bar-title"><span>دوره‌های آموزشی</span><b>۷۵٪</b></div>
+<div class="bar-line"><div class="bar-fill" style="width:75%"></div></div>
+</div>
+
+<div class="bar">
+<div class="bar-title"><span>پشتیبانی</span><b>۹۰٪</b></div>
+<div class="bar-line"><div class="bar-fill" style="width:90%"></div></div>
+</div>
 </div>
 </section>
 
@@ -167,129 +234,102 @@ body.light input{background:white;color:#172554}
 let current=null;
 let users=JSON.parse(localStorage.getItem("roham_users")||"[]");
 
-function menu(){
- document.getElementById("side").classList.toggle("open");
-}
-
-function theme(){
- document.body.classList.toggle("light");
-}
-
-function openLogin(){
- document.getElementById("modal").classList.add("show");
-}
-
-function closeLogin(){
- document.getElementById("modal").classList.remove("show");
-}
+function menu(){document.getElementById("side").classList.toggle("open")}
+function theme(){document.body.classList.toggle("light")}
+function openLogin(){document.getElementById("modal").classList.add("show")}
+function closeLogin(){document.getElementById("modal").classList.remove("show")}
 
 function page(id,button){
- document.querySelectorAll("section").forEach(x=>x.classList.remove("active"));
- document.getElementById(id).classList.add("active");
-
- document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
- if(button)button.classList.add("active");
-
- document.getElementById("title").textContent={
-  home:"داشبورد هوشمند",
-  ai:"دستیار هوش مصنوعی",
-  blogs:"وبلاگ‌ها",
-  plans:"اشتراک‌ها",
-  admin:"پنل مدیریت"
- }[id];
-
- document.getElementById("side").classList.remove("open");
-
- if(id==="admin")showUsers();
+document.querySelectorAll("section").forEach(x=>x.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+if(button)button.classList.add("active");
+document.getElementById("title").textContent={
+home:"داشبورد هوشمند",ai:"دستیار هوش مصنوعی",
+blogs:"وبلاگ‌ها",plans:"دوره‌ها و قیمت‌ها",admin:"پنل مدیریت"
+}[id];
+document.getElementById("side").classList.remove("open");
+if(id==="admin")showUsers();
 }
 
 function login(){
- const name=document.getElementById("name").value.trim();
- const email=document.getElementById("email").value.trim();
- const password=document.getElementById("password").value;
- const phone=document.getElementById("phone").value.trim();
+const name=document.getElementById("name").value.trim();
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+const phone=document.getElementById("phone").value.trim();
 
- if(!name||!email||!password||!phone){
-  document.getElementById("error").textContent="همه فیلدها را کامل کنید.";
-  return;
- }
+if(!name||!email||!password||!phone){
+document.getElementById("error").textContent="همه فیلدها را کامل کنید.";
+return;
+}
 
- if(email==="roham@rohamai.ir"&&password==="roham123"){
-  current={name:"رهام",email,phone,role:"admin",plan:"نامحدود"};
- }else{
-  current={name,email,phone,role:"user",plan:"رایگان"};
-  users.push(current);
-  localStorage.setItem("roham_users",JSON.stringify(users));
- }
+if(email==="roham@rohamai.ir"&&password==="roham123"){
+current={name:"رهام",email,phone,role:"admin",plan:"نامحدود"};
+}else{
+current={name,email,phone,role:"user",plan:"رایگان"};
+users.push(current);
+localStorage.setItem("roham_users",JSON.stringify(users));
+}
 
- document.getElementById("status").textContent=current.name;
- document.getElementById("logout").style.display="block";
- document.getElementById("account").textContent=current.name+" | "+current.email;
- closeLogin();
+document.getElementById("status").textContent=current.name;
+document.getElementById("logout").style.display="block";
+document.getElementById("account").textContent=current.name+" | "+current.email;
+closeLogin();
 }
 
 function logout(){
- current=null;
- document.getElementById("status").textContent="مهمان";
- document.getElementById("logout").style.display="none";
+current=null;
+document.getElementById("status").textContent="مهمان";
+document.getElementById("logout").style.display="none";
 }
 
 function showUsers(){
- const box=document.getElementById("users");
-
- if(!current||current.role!=="admin"){
-  box.innerHTML="فقط مدیر می‌تواند کاربران را ببیند.";
-  return;
- }
-
- box.innerHTML=users.map(x=>`
- <div class="user">
- <b>${x.name}</b><br>
- ایمیل: ${x.email}<br>
- شماره: ${x.phone}<br>
- اشتراک: ${x.plan}
- </div>`).join("");
+const box=document.getElementById("users");
+if(!current||current.role!=="admin"){
+box.innerHTML="فقط مدیر می‌تواند کاربران را ببیند.";
+return;
+}
+box.innerHTML=users.map(x=>`
+<div class="user">
+<b>${x.name}</b><br>
+ایمیل: ${x.email}<br>
+شماره: ${x.phone}<br>
+اشتراک: ${x.plan}
+</div>`).join("");
 }
 
 function clearChat(){
- document.getElementById("log").innerHTML=
- '<div class="msg bot">گفت‌وگو پاک شد.</div>';
+document.getElementById("log").innerHTML='<div class="msg bot">گفت‌وگو پاک شد.</div>';
 }
 
 function send(){
- const input=document.getElementById("message");
- const text=input.value.trim();
- const log=document.getElementById("log");
+const input=document.getElementById("message");
+const text=input.value.trim();
+const log=document.getElementById("log");
+if(!text)return;
 
- if(!text)return;
+log.innerHTML+=`<div class="msg user">${text}</div>`;
+let answer="درخواست شما دریافت شد. پاسخ آماده می‌شود.";
 
- log.innerHTML+=`<div class="msg user">${text}</div>`;
+if(text.includes("سلام"))answer="سلام! من دستیار رهام هستم.";
+else if(text.includes("کد"))answer="می‌توانم در HTML، CSS و JavaScript کمکتان کنم.";
+else if(text.includes("وبلاگ"))answer="در بخش وبلاگ مطالب آموزشی کامل قرار دارد.";
+else if(/عکس|تصویر|بساز|بکش/.test(text)){
+const url="https://image.pollinations.ai/prompt/"+encodeURIComponent(text)+"?width=768&height=512&nologo=true";
+answer=`تصویر آماده شد:<br><img src="${url}" style="max-width:100%;border-radius:15px">`;
+}
 
- let answer="درخواست شما دریافت شد. پاسخ آماده می‌شود.";
+setTimeout(()=>{
+log.innerHTML+=`<div class="msg bot">${answer}</div>`;
+log.scrollTop=log.scrollHeight;
+},500);
 
- if(text.includes("سلام"))
-  answer="سلام! من دستیار رهام هستم.";
- else if(text.includes("کد"))
-  answer="می‌توانم در HTML، CSS و JavaScript کمکتان کنم.";
- else if(text.includes("وبلاگ"))
-  answer="در بخش وبلاگ مطالب آموزشی کامل قرار دارد.";
- else if(/عکس|تصویر|بساز|بکش/.test(text)){
-  const url="https://image.pollinations.ai/prompt/"+
-  encodeURIComponent(text)+"?width=768&height=512&nologo=true";
-  answer=`تصویر آماده شد:<br><img src="${url}" style="max-width:100%;border-radius:15px">`;
- }
-
- setTimeout(()=>{
-  log.innerHTML+=`<div class="msg bot">${answer}</div>`;
-  log.scrollTop=log.scrollHeight;
- },500);
-
- input.value="";
+input.value="";
 }
 
 function buy(){
- if(!current)openLogin();
- else alert("درگاه پرداخت در نسخه نمایشی است.");
+if(!current)openLogin();
+else alert("درگاه پرداخت در نسخه نمایشی است.");
 }
 </script>
 </body>
