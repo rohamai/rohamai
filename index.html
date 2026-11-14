@@ -1,1435 +1,211 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl" class="dark">
+<!doctype html>
+<html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROHAM.AI - دستیار هوشمند و پلتفرم نسل جدید</title>
-
-    <style>
-      @font-face {
-        font-family: Vazirmatn;
-        src: url("Vazirmatn-variable.woff2") format("woff2");
-        font-weight: 100 900;
-        font-display: swap;
-      }
-    </style>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              brand: {
-                DEFAULT: '#2563eb',
-                dark: '#1d4ed8',
-                light: '#7c3aed'
-              },
-              dark: {
-                bg: '#0a0a0a',
-                card: 'rgba(20,20,20,.65)'
-              },
-              light: {
-                bg: '#f8f9fa',
-                card: 'rgba(255,255,255,.8)'
-              }
-            },
-            fontFamily: {
-              sans: ['Vazirmatn', 'sans-serif']
-            }
-          }
-        }
-      }
-    </script>
-
-    <style>
-      body {
-        -webkit-tap-highlight-color: transparent;
-        overflow-x: hidden;
-        transition: background-color .5s ease;
-        font-family: Vazirmatn, sans-serif;
-      }
-
-      .dark body {
-        background-color: #050505;
-        color: #f1f5f9;
-        background-image:
-          radial-gradient(at 0% 0%, rgba(37,99,235,.15) 0, transparent 50%),
-          radial-gradient(at 100% 100%, rgba(124,58,237,.18) 0, transparent 50%);
-        background-attachment: fixed;
-      }
-
-      body:not(.dark) {
-        background-color: #f0f0f0;
-        color: #1a1a1a;
-        background-image:
-          radial-gradient(at 0% 0%, rgba(37,99,235,.1) 0, transparent 50%),
-          radial-gradient(at 100% 100%, rgba(147,197,253,.25) 0, transparent 50%);
-        background-attachment: fixed;
-      }
-
-      * {
-        font-family: Vazirmatn, sans-serif !important;
-      }
-
-      ::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      ::-webkit-scrollbar-thumb {
-        background: #555;
-        border-radius: 10px;
-      }
-
-      ::-webkit-scrollbar-thumb:hover {
-        background: #2563eb;
-      }
-
-      .section-hidden {
-        display: none !important;
-      }
-
-      .glass-panel {
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-        border: 1px solid rgba(129,140,248,.2);
-        box-shadow: 0 18px 50px rgba(0,0,0,.25);
-        transition: all .3s ease;
-      }
-
-      .dark .glass-panel {
-        background: rgba(10,16,36,.78);
-        border-color: rgba(129,140,248,.2);
-      }
-
-      body:not(.dark) .glass-panel {
-        background: rgba(255,255,255,.72);
-        border-color: rgba(99,102,241,.16);
-      }
-
-      .glass-modal {
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-      }
-
-      .dark .glass-modal {
-        background: rgba(10,16,36,.94);
-        border: 1px solid rgba(129,140,248,.25);
-        box-shadow: 0 25px 50px rgba(0,0,0,.8);
-      }
-
-      body:not(.dark) .glass-modal {
-        background: rgba(255,255,255,.94);
-        border: 1px solid rgba(99,102,241,.2);
-      }
-
-      .ambient-orb {
-        position: fixed;
-        border-radius: 50%;
-        filter: blur(90px);
-        z-index: -1;
-        animation: float 20s infinite alternate;
-      }
-
-      .orb-1 {
-        top: 10%;
-        right: 15%;
-        width: 350px;
-        height: 350px;
-        background: rgba(37,99,235,.18);
-      }
-
-      .orb-2 {
-        bottom: 10%;
-        left: 10%;
-        width: 450px;
-        height: 450px;
-        background: rgba(124,58,237,.16);
-      }
-
-      @keyframes float {
-        0% { transform: translate(0,0) scale(1); }
-        50% { transform: translate(40px,-40px) scale(1.1); }
-        100% { transform: translate(-30px,30px) scale(.9); }
-      }
-
-      #toast-container {
-        position: fixed;
-        top: 24px;
-        right: 24px;
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .toast {
-        backdrop-filter: blur(10px);
-        padding: 16px 24px;
-        border-radius: 16px;
-        border-right: 4px solid transparent;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        animation: slideInRight .4s ease forwards;
-        opacity: 0;
-        transform: translateX(50px);
-      }
-
-      .dark .toast {
-        background: rgba(10,16,36,.95);
-        color: #fff;
-      }
-
-      body:not(.dark) .toast {
-        background: rgba(255,255,255,.95);
-        color: #000;
-      }
-
-      .toast.success { border-right-color: #10b981; }
-      .toast.error { border-right-color: #2563eb; }
-      .toast.info { border-right-color: #7c3aed; }
-
-      @keyframes slideInRight {
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
-
-      .typing-dot {
-        display: inline-block;
-        width: 6px;
-        height: 6px;
-        background-color: #2563eb;
-        border-radius: 50%;
-        margin: 0 2px;
-        animation: bounce 1.4s infinite ease-in-out both;
-      }
-
-      .typing-dot:nth-child(1) {
-        animation-delay: -.32s;
-      }
-
-      .typing-dot:nth-child(2) {
-        animation-delay: -.16s;
-      }
-
-      @keyframes bounce {
-        0%,80%,100% {
-          transform: scale(0);
-          opacity: .5;
-        }
-
-        40% {
-          transform: scale(1.2);
-          opacity: 1;
-        }
-      }
-
-      .crimson-glow:hover {
-        box-shadow: 0 0 25px rgba(37,99,235,.6);
-      }
-
-      @media(max-width:640px) {
-        header {
-          height: 64px !important;
-          padding-inline: 12px !important;
-        }
-
-        .hero {
-          padding-top: 5rem !important;
-        }
-
-        .hero h1 {
-          font-size: clamp(2.1rem,11vw,3.2rem) !important;
-          line-height: 1.3 !important;
-        }
-
-        .glass-panel {
-          border-radius: 20px !important;
-        }
-
-        #sidebar {
-          width: 88vw !important;
-          max-width: 340px !important;
-        }
-
-        .p-8 {
-          padding: 18px !important;
-        }
-
-        .p-10 {
-          padding: 20px !important;
-        }
-
-        .p-12 {
-          padding: 22px !important;
-        }
-      }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>رهام AI</title>
+<style>
+@font-face{font-family:vazir;src:url("Vazirmatn-variable.woff2")}
+*{box-sizing:border-box;font-family:vazir,Arial}
+body{margin:0;background:#080b18;color:#eef2ff}
+body.light{background:#eef4ff;color:#172554}
+.app{display:flex;min-height:100vh}
+aside{width:250px;padding:22px;background:#10162b;min-height:100vh}
+main{flex:1;padding:25px;max-width:1300px;margin:auto}
+.logo{font-size:25px;font-weight:bold;margin-bottom:30px}
+.logo b{color:#8b5cf6}
+button{border:0;border-radius:13px;padding:12px 17px;cursor:pointer;color:white;background:linear-gradient(135deg,#2563eb,#8b5cf6);font-weight:bold}
+nav button{display:block;width:100%;margin:8px 0;text-align:right;background:transparent;color:#b9c2d8}
+nav button:hover{background:#29345e}
+.panel{background:#ffffff12;border:1px solid #ffffff24;border-radius:24px;padding:22px;box-shadow:0 20px 60px #0005;backdrop-filter:blur(20px)}
+body.light .panel{background:#ffffffaa;color:#172554;border-color:#cbd5e1}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+.hero{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+.hero h1{font-size:clamp(2rem,6vw,5rem)}
+.gradient{color:#8b5cf6}
+.cards,.blogs,.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+.card,.blog,.plan{padding:20px}
+.blog img{width:100%;height:150px;object-fit:cover;border-radius:16px}
+.blog p{color:#aeb8cf;line-height:2}
+section{display:none}
+section.active{display:block}
+.chat{height:500px;display:flex;flex-direction:column}
+#chatLog{flex:1;overflow:auto}
+.msg{padding:12px 16px;border-radius:16px;margin:10px 0;max-width:80%;line-height:2}
+.bot{background:#172d59}
+.user{background:#55318f;margin-right:auto}
+.chat form{display:flex;gap:8px;margin-top:12px}
+input{width:100%;padding:13px;border-radius:12px;border:1px solid #64748b;background:#071124;color:white}
+.modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;padding:20px}
+.modal.show{display:grid}
+.modal-box{width:min(430px,100%)}
+.modal-box input{margin:7px 0 14px}
+.user-card{padding:14px;background:#111c37;border-radius:12px;margin:8px 0}
+@media(max-width:800px){
+ aside{position:fixed;right:-260px;z-index:5;transition:.3s}
+ aside.open{right:0}
+ .hero,.cards,.blogs,.plans{grid-template-columns:1fr}
+ main{padding:15px}
+ .mobile{display:block!important}
+}
+.mobile{display:none}
+</style>
 </head>
-
-<body class="antialiased font-sans selection:bg-brand selection:text-white">
-
-  <div class="ambient-orb orb-1"></div>
-  <div class="ambient-orb orb-2"></div>
-  <div id="toast-container"></div>
-
-  <header class="fixed top-0 w-full glass-panel z-30 h-20 flex items-center px-6 transition-all duration-300 !border-b-0 !rounded-none">
-    <div class="flex-1 flex items-center justify-start gap-5">
-      <button onclick="toggleSidebar(true)" class="text-gray-500 hover:text-brand text-2xl transition-colors">
-        <i class="fa-solid fa-bars-staggered"></i>
-      </button>
-
-      <div class="hidden sm:flex items-center gap-3 cursor-pointer group" onclick="showSection('home')">
-        <div class="w-10 h-10 bg-gradient-to-br from-brand to-brand-dark rounded-xl flex items-center justify-center shadow-lg">
-          <i class="fa-solid fa-brain text-white text-xl"></i>
-        </div>
-
-        <div class="font-black text-2xl tracking-widest text-gray-800 dark:text-white">
-          ROHAM<span class="text-brand">.AI</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex-1 flex items-center justify-end gap-4" id="header-auth-area">
-      <button onclick="openModal('login')" class="flex items-center gap-2 glass-panel border border-brand/30 hover:bg-brand/10 text-gray-800 dark:text-white px-6 py-2.5 rounded-2xl transition-all text-sm font-bold crimson-glow">
-        <i class="fa-solid fa-arrow-right-to-bracket"></i>
-        ورود به پلتفرم
-      </button>
-    </div>
-  </header>
-
-  <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 dark:bg-black/80 z-40 hidden backdrop-blur-sm" onclick="toggleSidebar(false)"></div>
-
-  <div id="sidebar" class="fixed inset-y-0 right-0 w-72 glass-panel transform translate-x-full transition-transform duration-400 z-50 flex flex-col shadow-2xl">
-    <div class="p-6 flex justify-between items-center border-b border-gray-200 dark:border-white/5">
-      <div class="font-black text-2xl tracking-widest text-gray-800 dark:text-white flex items-center gap-2">
-        <i class="fa-solid fa-brain text-brand text-lg"></i>
-        ROHAM
-      </div>
-
-      <button onclick="toggleSidebar(false)" class="text-gray-500 hover:text-brand w-8 h-8 rounded-full dark:bg-white/5 bg-black/5 flex items-center justify-center">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <div id="sidebar-profile" class="hidden p-6 border-b border-gray-200 dark:border-white/5">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand to-brand-light text-white flex items-center justify-center text-xl font-bold">
-          <i class="fa-solid fa-user-tie"></i>
-        </div>
-
-        <div>
-          <h4 id="sidebar-user-name" class="font-bold text-gray-800 dark:text-white text-sm">کاربر</h4>
-          <p id="sidebar-user-role" class="text-xs text-brand font-medium mt-1">عادی</p>
-        </div>
-      </div>
-    </div>
-
-    <nav class="p-4 flex flex-col gap-2 mt-2 flex-1 overflow-y-auto">
-      <a href="#" onclick="showSection('home')" class="flex items-center gap-4 p-3.5 rounded-2xl text-gray-600 dark:text-slate-400 hover:text-brand transition-colors font-medium">
-        <i class="fa-solid fa-house w-6 text-center text-lg"></i>
-        صفحه اصلی
-      </a>
-
-      <a href="#" onclick="showSection('aichat', true)" class="flex items-center gap-4 p-3.5 rounded-2xl bg-brand/10 border border-brand/20 text-brand font-bold">
-        <i class="fa-solid fa-wand-magic-sparkles w-6 text-center text-lg"></i>
-        استودیو هوش مصنوعی
-      </a>
-
-      <a href="#" onclick="showSection('blogs')" class="flex items-center gap-4 p-3.5 rounded-2xl text-gray-600 dark:text-slate-400 hover:text-brand transition-colors font-medium">
-        <i class="fa-solid fa-layer-group w-6 text-center text-lg"></i>
-        وبلاگ و آموزش
-      </a>
-
-      <a href="#" onclick="showSection('pricing')" class="flex items-center gap-4 p-3.5 rounded-2xl text-gray-600 dark:text-slate-400 hover:text-brand transition-colors font-medium">
-        <i class="fa-solid fa-gem w-6 text-center text-lg"></i>
-        اشتراک و پلن‌ها
-      </a>
-
-      <div class="border-t border-gray-200 dark:border-white/5 my-2"></div>
-
-      <a href="#" onclick="showSection('dashboard', true)" class="flex items-center gap-4 p-3.5 rounded-2xl text-gray-600 dark:text-slate-400 hover:text-brand transition-colors font-medium">
-        <i class="fa-solid fa-chart-pie w-6 text-center text-lg"></i>
-        پنل کاربری / مدیریت
-      </a>
-    </nav>
-
-    <div class="p-4 border-t border-gray-200 dark:border-white/5 space-y-2">
-      <button onclick="toggleTheme()" class="w-full flex items-center justify-between gap-2 p-3.5 rounded-2xl dark:bg-white/5 bg-black/5 text-gray-700 dark:text-slate-300 hover:text-brand transition-colors font-bold text-sm">
-        <span class="flex items-center gap-2">
-          <i class="fa-solid fa-moon dark:text-brand"></i>
-          تم تاریک / روشن
-        </span>
-
-        <div class="w-10 h-5 rounded-full dark:bg-brand bg-gray-300 relative">
-          <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 dark:left-0.5 right-0.5"></div>
-        </div>
-      </button>
-
-      <button id="sidebar-logout" onclick="handleLogout()" class="hidden w-full flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors font-bold text-sm border border-red-500/20">
-        <i class="fa-solid fa-power-off"></i>
-        خروج از حساب
-      </button>
-    </div>
-  </div>
-
-  <div id="login-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 transition-opacity opacity-0">
-    <div class="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md" onclick="closeModal('login')"></div>
-
-    <div class="glass-modal w-full max-w-md rounded-[2rem] overflow-hidden relative z-10">
-      <div class="p-8 relative">
-        <div class="flex justify-between items-center mb-8">
-          <div>
-            <h3 class="text-2xl font-black text-gray-900 dark:text-white">
-              ورود به پلتفرم
-            </h3>
-
-            <p class="text-sm text-gray-500 mt-1">
-              دسترسی به ابزارهای پیشرفته
-            </p>
-          </div>
-
-          <button onclick="closeModal('login')" class="text-gray-500 hover:text-brand transition-colors w-10 h-10 flex items-center justify-center rounded-full dark:bg-white/5 bg-black/5">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-
-        <form onsubmit="event.preventDefault(); handleLogin();" class="space-y-5">
-          <div>
-            <label class="block text-sm font-bold text-gray-600 dark:text-slate-400 mb-2">
-              ایمیل کاربری
-            </label>
-
-            <input type="email" id="login-email" required class="w-full bg-white/50 dark:bg-black/50 border border-gray-300 dark:border-white/10 rounded-2xl py-3.5 px-4 outline-none text-gray-900 dark:text-white" dir="ltr" placeholder="user@domain.com">
-          </div>
-
-          <div>
-            <label class="block text-sm font-bold text-gray-600 dark:text-slate-400 mb-2">
-              رمز عبور
-            </label>
-
-            <input type="password" id="login-password" required class="w-full bg-white/50 dark:bg-black/50 border border-gray-300 dark:border-white/10 rounded-2xl py-3.5 px-4 outline-none text-gray-900 dark:text-white" dir="ltr" placeholder="••••••••">
-          </div>
-
-          <div>
-            <label class="block text-sm font-bold text-gray-600 dark:text-slate-400 mb-2">
-              کپچا
-            </label>
-
-            <div class="flex gap-2 items-center mb-2">
-              <div class="bg-gray-100 dark:bg-black/80 rounded-2xl overflow-hidden border border-gray-300 dark:border-white/10 relative w-full h-14 flex justify-center items-center">
-                <canvas id="captcha-canvas" width="160" height="45"></canvas>
-              </div>
-
-              <button type="button" onclick="generateCaptcha()" class="w-14 h-14 dark:bg-white/5 bg-black/5 rounded-2xl flex items-center justify-center text-gray-500 hover:text-brand">
-                <i class="fa-solid fa-rotate-right"></i>
-              </button>
-            </div>
-
-            <input type="text" id="login-captcha" required autocomplete="off" class="w-full bg-white/50 dark:bg-black/50 border border-gray-300 dark:border-white/10 rounded-2xl py-3.5 px-4 outline-none text-center tracking-[0.5em] font-bold text-gray-900 dark:text-white uppercase" dir="ltr" placeholder="کد تصویر">
-          </div>
-
-          <button type="submit" class="w-full bg-brand hover:bg-brand-dark text-white font-bold py-4 rounded-2xl transition-all crimson-glow mt-6 border border-brand/50 shadow-lg">
-            ورود به سیستم
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div id="profile-modal" class="fixed inset-0 z-[65] hidden flex items-center justify-center p-4 transition-opacity opacity-0">
-    <div class="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
-
-    <div class="glass-modal w-full max-w-sm rounded-[2rem] shadow-2xl overflow-hidden relative z-10">
-      <div class="p-8 text-center">
-        <div class="w-20 h-20 bg-brand/10 text-brand rounded-3xl flex items-center justify-center text-4xl mx-auto mb-6 border border-brand/30">
-          <i class="fa-solid fa-id-badge"></i>
-        </div>
-
-        <h3 class="text-2xl font-black text-gray-900 dark:text-white mb-2">
-          اطلاعات کاربری
-        </h3>
-
-        <p class="text-sm text-gray-500 mb-8">
-          نام نمایشی خود را وارد کنید
-        </p>
-
-        <form onsubmit="event.preventDefault(); submitProfileSetup();" class="space-y-4">
-          <input type="text" id="setup-display-name" required class="w-full bg-white/50 dark:bg-black/60 border border-gray-300 dark:border-white/10 rounded-2xl py-3.5 px-4 outline-none text-center font-bold text-gray-900 dark:text-white" placeholder="نام شما (مثال: رهام)">
-
-          <button type="submit" class="w-full bg-brand text-white font-bold py-4 rounded-2xl transition-colors shadow-lg mt-4">
-            ثبت و ورود
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div id="payment-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4 transition-opacity opacity-0">
-    <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="closeModal('payment')"></div>
-
-    <div class="glass-modal w-full max-w-md rounded-3xl shadow-2xl overflow-hidden relative z-10">
-      <div class="p-5 border-b border-gray-200 dark:border-white/10 flex justify-between items-center">
-        <div>
-          <h3 class="font-bold text-gray-900 dark:text-white text-sm">
-            درگاه پرداخت امن
-          </h3>
-          <p class="text-xs text-gray-500 mt-1" id="payment-amount">
-            مبلغ: ۰ تومان
-          </p>
-        </div>
-
-        <button onclick="closeModal('payment')" class="text-gray-500 hover:text-brand w-8 h-8 flex justify-center items-center dark:bg-white/5 bg-black/5 rounded-lg">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <div class="p-6">
-        <form id="payment-form" onsubmit="event.preventDefault(); processPayment();" class="space-y-5">
-          <input type="text" required pattern="\d{16}" maxlength="16" class="w-full bg-white/50 dark:bg-black/60 border border-gray-300 dark:border-white/10 rounded-xl py-3 px-4 outline-none text-gray-900 dark:text-white" placeholder="شماره کارت" dir="ltr">
-
-          <div class="grid grid-cols-2 gap-4">
-            <input type="password" required pattern="\d{3,4}" maxlength="4" class="w-full bg-white/50 dark:bg-black/60 border border-gray-300 dark:border-white/10 rounded-xl py-3 px-4 outline-none text-gray-900 dark:text-white" placeholder="CVV2" dir="ltr">
-            <input type="text" required maxlength="5" class="w-full bg-white/50 dark:bg-black/60 border border-gray-300 dark:border-white/10 rounded-xl py-3 px-4 outline-none text-gray-900 dark:text-white" placeholder="ماه/سال" dir="ltr">
-          </div>
-
-          <div class="flex gap-2">
-            <input type="text" required class="flex-1 bg-white/50 dark:bg-black/60 border border-gray-300 dark:border-white/10 rounded-xl py-3 px-4 outline-none text-gray-900 dark:text-white" placeholder="رمز پویا">
-            <button type="button" id="otp-btn" onclick="requestOTP()" class="bg-brand/10 text-brand font-bold px-4 rounded-xl border border-brand/30">
-              دریافت رمز
-            </button>
-          </div>
-
-          <button type="submit" id="pay-submit-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl">
-            پرداخت و فعال‌سازی
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div id="blog-modal" class="fixed inset-0 z-[75] hidden flex items-center justify-center p-4 transition-opacity opacity-0">
-    <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closeModal('blog')"></div>
-
-    <div class="glass-modal w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden relative z-10 flex flex-col">
-      <div class="relative h-64">
-        <img id="blog-modal-img" src="" class="w-full h-full object-cover">
-        <button onclick="closeModal('blog')" class="absolute top-4 left-4 bg-black/60 text-white w-10 h-10 rounded-full">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <div class="p-8 overflow-y-auto">
-        <h2 id="blog-modal-title" class="text-3xl font-black text-gray-900 dark:text-white mb-6">
-          عنوان مطلب
-        </h2>
-
-        <div id="blog-modal-body" class="text-gray-800 dark:text-slate-300 leading-loose text-justify">
-        </div>
-      </div>
-    </div>
-  </div>
-        <div class="glass-modal w-full max-w-3xl max-h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-transform duration-300 relative z-10">
-            <div class="relative h-72 w-full">
-                <img id="blog-modal-img" src="" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
-                <button onclick="closeModal('blog')" class="absolute top-4 left-4 bg-black/60 text-white w-10 h-10 rounded-full hover:bg-brand transition-colors flex items-center justify-center backdrop-blur-md border border-white/20 z-10">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="absolute bottom-6 right-8 left-8">
-                    <h2 id="blog-modal-title" class="text-3xl md:text-4xl font-black text-white drop-shadow-lg leading-tight">عنوان</h2>
-                </div>
-            </div>
-
-            <div class="p-8 overflow-y-auto flex-1 text-gray-800 dark:text-slate-300 leading-loose text-justify text-base" id="blog-modal-body">
-            </div>
-        </div>
-    </div>
-
-    <main class="pt-24 px-4 md:px-8 pb-16 min-h-screen max-w-7xl mx-auto relative z-10">
-
-        <section id="section-home" class="flex flex-col gap-20">
-            <div class="min-h-[60vh] flex flex-col items-center justify-center text-center relative pt-10">
-                <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-brand/40 bg-brand/10 text-brand text-sm font-bold mb-8 backdrop-blur-md">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
-                    </span>
-                    هوش مصنوعی قدرتمند
-                </div>
-
-                <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-6 text-gray-900 dark:text-white leading-[1.2] tracking-tight">
-                    آینده با <span class="text-brand">رهام</span>
-                </h1>
-
-                <p class="text-gray-600 dark:text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
-                    پلتفرم هوشمند برای چت متنی، خلق تصاویر بی‌نظیر و تحلیل داده با رابط کاربری اختصاصی شیشه‌ای.
-                </p>
-
-                <div class="flex flex-col sm:flex-row gap-5">
-                    <button onclick="showSection('aichat', true)" class="bg-brand hover:bg-brand-dark text-white px-10 py-4 rounded-2xl font-bold shadow-lg transition-all text-lg hover:-translate-y-1">
-                        استودیو هوش مصنوعی
-                        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="glass-panel p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden flex flex-col md:flex-row gap-8 items-center border-l-4 border-brand">
-                <div class="absolute -right-20 -top-20 w-64 h-64 bg-brand/10 rounded-full blur-[80px]"></div>
-
-                <div class="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-full bg-gradient-to-br from-brand to-black p-1 shadow-lg">
-                    <img src="https://image.pollinations.ai/prompt/handsome%2012%20year%20old%20persian%20boy%20developer%20portrait%20dark%20aesthetic?seed=42&width=400&height=400&nologo=true" alt="رهام" class="w-full h-full object-cover rounded-full border-4 border-black">
-                </div>
-
-                <div class="flex-1 text-center md:text-right z-10">
-                    <h2 class="text-3xl font-black text-gray-900 dark:text-white mb-4">
-                        درباره من
-                    </h2>
-
-                    <p class="text-gray-700 dark:text-slate-300 leading-loose text-lg mb-6 text-justify">
-                        من <strong>رهام</strong> هستم، ۱۲ ساله، فعال در حوزهٔ هوش مصنوعی و توسعهٔ وب.
-                        مالک وب‌سایت <a href="https://rohamai.ir" target="_blank" class="text-brand font-bold hover:underline">rohamai.ir</a>
-                        و تولیدکنندهٔ محتوا در پیج اینستاگرام و کانال بله هستم.
-                        هدف من ایجاد بستری ساده، قدرتمند و زیبا برای استفاده از تکنولوژی‌های روز دنیاست.
-                    </p>
-
-                    <div class="flex flex-wrap gap-4 justify-center md:justify-start">
-                        <a href="https://rohamai.ir" target="_blank" class="dark:bg-black/50 bg-white/50 border border-gray-300 dark:border-white/10 hover:border-brand text-gray-800 dark:text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center gap-2">
-                            <i class="fa-solid fa-globe"></i>
-                            سایت رسمی
-                        </a>
-
-                        <a href="#" class="dark:bg-black/50 bg-white/50 border border-gray-300 dark:border-white/10 hover:border-brand text-gray-800 dark:text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center gap-2">
-                            <i class="fa-brands fa-instagram text-pink-500"></i>
-                            اینستاگرام
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                <div class="glass-panel p-6 rounded-2xl text-center hover:-translate-y-2 transition-transform">
-                    <i class="fa-solid fa-users text-3xl text-gray-400 mb-4"></i>
-                    <div class="text-4xl font-black text-gray-900 dark:text-white mb-1">۴,۵۰۰+</div>
-                    <div class="text-sm text-gray-500 font-bold">کاربر فعال</div>
-                </div>
-
-                <div class="glass-panel border-brand/20 bg-brand/5 p-6 rounded-2xl text-center hover:-translate-y-2 transition-transform">
-                    <i class="fa-solid fa-image text-3xl text-brand mb-4"></i>
-                    <div class="text-4xl font-black text-gray-900 dark:text-white mb-1">۲۰K+</div>
-                    <div class="text-sm text-brand font-bold">عکس تولید شده</div>
-                </div>
-
-                <div class="glass-panel p-6 rounded-2xl text-center hover:-translate-y-2 transition-transform">
-                    <i class="fa-solid fa-message text-3xl text-gray-400 mb-4"></i>
-                    <div class="text-4xl font-black text-gray-900 dark:text-white mb-1">۱M+</div>
-                    <div class="text-sm text-gray-500 font-bold">پردازش متنی</div>
-                </div>
-
-                <div class="glass-panel p-6 rounded-2xl text-center hover:-translate-y-2 transition-transform">
-                    <i class="fa-solid fa-code text-3xl text-gray-400 mb-4"></i>
-                    <div class="text-4xl font-black text-gray-900 dark:text-white mb-1">۱۰۰٪</div>
-                    <div class="text-sm text-gray-500 font-bold">کدنویسی بومی</div>
-                </div>
-            </div>
-
-            <div class="mb-10">
-                <h3 class="text-2xl font-black text-gray-900 dark:text-white mb-8 text-center">
-                    نظرات کاربران
-                </h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-panel p-6 rounded-[2rem] relative">
-                        <i class="fa-solid fa-quote-right absolute top-6 left-6 text-4xl text-gray-200 dark:text-white/5"></i>
-                        <h4 class="font-bold text-gray-900 dark:text-white mb-1">علی کریمی</h4>
-                        <span class="text-xs text-gray-500 block mb-3">برنامه‌نویس</span>
-                        <p class="text-gray-600 dark:text-slate-400 text-sm leading-loose">
-                            رابط کاربری دارک مود به شدت جذابه و خستگی چشم رو کم می‌کنه.
-                        </p>
-                    </div>
-
-                    <div class="glass-panel p-6 rounded-[2rem] border-brand/20 relative">
-                        <i class="fa-solid fa-quote-right absolute top-6 left-6 text-4xl text-gray-200 dark:text-white/5"></i>
-                        <h4 class="font-bold text-gray-900 dark:text-white mb-1">سارا مجیدی</h4>
-                        <span class="text-xs text-brand block mb-3">گرافیست پریمیوم</span>
-                        <p class="text-gray-700 dark:text-slate-300 text-sm leading-loose">
-                            بخش تولید تصویر بی‌نظیره و هر ایده‌ای را به تصویر تبدیل می‌کند.
-                        </p>
-                    </div>
-
-                    <div class="glass-panel p-6 rounded-[2rem] relative">
-                        <i class="fa-solid fa-quote-right absolute top-6 left-6 text-4xl text-gray-200 dark:text-white/5"></i>
-                        <h4 class="font-bold text-gray-900 dark:text-white mb-1">رضا احمدی</h4>
-                        <span class="text-xs text-gray-500 block mb-3">دانشجو</span>
-                        <p class="text-gray-600 dark:text-slate-400 text-sm leading-loose">
-                            مقالات وبلاگ برای یادگیری ابزارهای جدید خیلی مفید هستند.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="section-aichat" class="section-hidden h-[calc(100vh-8rem)]">
-            <div class="h-full flex flex-col max-w-5xl mx-auto glass-panel rounded-[2rem] overflow-hidden relative shadow-2xl">
-                <div class="p-5 border-b border-gray-200 dark:border-white/5 flex justify-between items-center">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-brand border dark:border-white/10 border-gray-300 dark:bg-[#111] bg-white">
-                            <i class="fa-solid fa-robot text-xl"></i>
-                        </div>
-
-                        <div>
-                            <h3 class="font-bold text-lg text-gray-900 dark:text-white">رهام AI</h3>
-                            <div class="text-xs text-gray-500 mt-1">مدل زبانی هوشمند + تولید عکس</div>
-                        </div>
-                    </div>
-
-                    <button onclick="clearChat()" class="text-gray-500 hover:text-brand transition-colors text-sm font-bold flex items-center gap-2 px-4 py-2 rounded-xl border dark:border-white/5 border-gray-200">
-                        <i class="fa-solid fa-broom"></i>
-                        پاکسازی
-                    </button>
-                </div>
-
-                <div id="chat-history" class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6 scroll-smooth">
-                    <div class="flex w-full justify-start">
-                        <div class="max-w-[85%] md:max-w-[70%] glass-panel rounded-3xl rounded-tr-sm p-5 text-sm leading-relaxed shadow-lg">
-                            سلام! من هوش مصنوعی اختصاصی رهام هستم.
-                            می‌توانید سؤال متنی بپرسید یا درخواست ساخت تصویر بدهید.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="p-5 dark:bg-black/60 bg-white/60 border-t border-gray-200 dark:border-white/5 backdrop-blur-xl">
-                    <form onsubmit="event.preventDefault(); handleAiAction();" class="flex gap-3 relative max-w-5xl mx-auto">
-                        <input type="text" id="chat-input" autocomplete="off" class="w-full glass-panel dark:bg-black/50 bg-white border dark:border-white/10 border-gray-300 rounded-2xl pl-16 pr-5 py-4 text-sm focus:border-brand outline-none text-gray-900 dark:text-white" placeholder="درخواست خود را بنویسید...">
-
-                        <button type="submit" class="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-brand hover:bg-brand-dark text-white rounded-xl flex items-center justify-center shadow-lg">
-                            <i class="fa-solid fa-paper-plane rotate-180"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <section id="section-blogs" class="section-hidden py-10">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-black mb-4 text-gray-900 dark:text-white">
-                    مقالات و <span class="text-brand">آموزش‌ها</span>
-                </h2>
-
-                <p class="text-gray-500 max-w-xl mx-auto">
-                    دانش روز هوش مصنوعی را با ما دنبال کنید.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="blog-grid">
-            </div>
-        </section>
-
-        <section id="section-pricing" class="section-hidden py-10">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-black mb-4 text-gray-900 dark:text-white">
-                    پلن‌های <span class="text-brand">اشتراکی</span>
-                </h2>
-
-                <p class="text-gray-500 max-w-xl mx-auto">
-                    با ارتقای حساب، نامحدود خلق کنید.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
-                <div class="glass-panel rounded-[2.5rem] p-8 flex flex-col items-center text-center">
-                    <h3 class="text-xl font-bold text-gray-600 dark:text-slate-400 mb-2">برنزی</h3>
-                    <div class="text-3xl font-black text-gray-900 dark:text-white mb-6">
-                        ۹۹,۰۰۰ <span class="text-sm text-gray-500">تومان/ماه</span>
-                    </div>
-
-                    <ul class="text-sm text-gray-600 dark:text-slate-400 space-y-4 mb-8 text-right w-full">
-                        <li>۵۰ پیام روزانه</li>
-                        <li>تولید عکس استاندارد</li>
-                    </ul>
-
-                    <button onclick="openPaymentModal('برنزی','۹۹,۰۰۰')" class="mt-auto w-full dark:bg-white/5 bg-black/5 text-gray-800 dark:text-white font-bold py-3.5 rounded-2xl hover:border-brand border border-transparent transition-all">
-                        خرید پلن
-                    </button>
-                </div>
-
-                <div class="glass-panel border-brand/50 rounded-[2.5rem] p-10 flex flex-col items-center text-center transform md:scale-110 shadow-lg relative z-10">
-                    <div class="absolute -top-4 bg-brand text-white text-xs font-bold px-6 py-2 rounded-full shadow-lg">
-                        پیشنهاد ویژه
-                    </div>
-
-                    <i class="fa-solid fa-crown text-4xl text-brand mb-4"></i>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">پریمیوم</h3>
-
-                    <div class="text-4xl font-black text-brand mb-6">
-                        ۲۹۹,۰۰۰
-                        <span class="text-sm text-gray-500 font-normal">تومان/ماه</span>
-                    </div>
-
-                    <ul class="text-sm text-gray-800 dark:text-slate-300 space-y-5 mb-10 text-right w-full">
-                        <li>دسترسی نامحدود به هوش مصنوعی</li>
-                        <li>تولید عکس کیفیت بالا 4K</li>
-                        <li>پشتیبانی ویژه رهام</li>
-                    </ul>
-
-                    <button onclick="openPaymentModal('پریمیوم','۲۹۹,۰۰۰')" class="w-full bg-brand hover:bg-brand-dark text-white font-bold py-4 rounded-2xl transition-all">
-                        ارتقا به پریمیوم
-                    </button>
-                </div>
-
-                <div class="glass-panel rounded-[2.5rem] p-8 flex flex-col items-center text-center">
-                    <h3 class="text-xl font-bold text-gray-600 dark:text-slate-400 mb-2">نقره‌ای</h3>
-
-                    <div class="text-3xl font-black text-gray-900 dark:text-white mb-6">
-                        ۱۴۹,۰۰۰ <span class="text-sm text-gray-500">تومان/ماه</span>
-                    </div>
-
-                    <ul class="text-sm text-gray-600 dark:text-slate-400 space-y-4 mb-8 text-right w-full">
-                        <li>۱۰۰ پیام روزانه</li>
-                        <li>تولید عکس نامحدود</li>
-                    </ul>
-
-                    <button onclick="openPaymentModal('نقره‌ای','۱۴۹,۰۰۰')" class="mt-auto w-full dark:bg-white/5 bg-black/5 text-gray-800 dark:text-white font-bold py-3.5 rounded-2xl hover:border-brand border border-transparent transition-all">
-                        خرید پلن
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <section id="section-dashboard" class="section-hidden py-10">
-            <h2 class="text-4xl font-black text-gray-900 dark:text-white mb-10" id="dash-main-title">
-                داشبورد
-            </h2>
-
-            <div id="user-dashboard" class="hidden">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center">
-                        <i class="fa-solid fa-id-card text-5xl text-gray-400 mb-4"></i>
-                        <h3 class="text-2xl font-black text-gray-900 dark:text-white mb-2" id="udash-name">
-                            نام کاربر
-                        </h3>
-                        <p class="text-gray-500 mb-6" id="udash-email">
-                            email@test.com
-                        </p>
-
-                        <div class="dark:bg-black/50 bg-gray-100 px-6 py-3 rounded-xl border dark:border-white/10 border-gray-300">
-                            <span class="text-sm font-bold text-gray-500">پلن فعلی:</span>
-                            <span class="text-lg font-black text-brand ml-2" id="udash-plan">رایگان</span>
-                        </div>
-                    </div>
-
-                    <div class="glass-panel p-8 rounded-[2rem]">
-                        <h4 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-ticket text-brand"></i>
-                            کد تخفیف
-                        </h4>
-
-                        <div class="flex gap-3">
-                            <input type="text" id="discount-input" class="w-full dark:bg-black/50 bg-white border dark:border-white/10 border-gray-300 rounded-xl px-4 outline-none text-gray-900 dark:text-white text-left font-mono" placeholder="ROHAM2026">
-
-                            <button onclick="applyDiscount()" class="dark:bg-white/10 bg-gray-800 text-white px-6 py-3 rounded-xl font-bold hover:bg-brand transition-colors whitespace-nowrap">
-                                اعمال کد
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="admin-dashboard" class="hidden flex-col gap-8">
-                <div class="glass-panel p-6 rounded-[2rem]">
-                    <h4 class="font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                        <i class="fa-solid fa-crown text-brand"></i>
-                        کاربران پریمیوم
-                    </h4>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-right text-gray-600 dark:text-slate-300">
-                            <thead class="text-xs text-gray-500 uppercase dark:bg-black/50 bg-gray-100">
-                                <tr>
-                                    <th class="px-6 py-4">نام</th>
-                                    <th class="px-6 py-4">ایمیل</th>
-                                    <th class="px-6 py-4">تخصص</th>
-                                </tr>
-                            </thead>
-
-                            <tbody id="admin-table-premium"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="glass-panel p-6 rounded-[2rem]">
-                    <h4 class="font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                        <i class="fa-solid fa-users text-gray-500"></i>
-                        کاربران عادی
-                    </h4>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-right text-gray-600 dark:text-slate-300">
-                            <thead class="text-xs text-gray-500 uppercase dark:bg-black/50 bg-gray-100">
-                                <tr>
-                                    <th class="px-6 py-4">نام</th>
-                                    <th class="px-6 py-4">ایمیل</th>
-                                </tr>
-                            </thead>
-
-                            <tbody id="admin-table-free"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <script>
-      const ADMIN_CRED = {
-        email: "roham@rohamai.ir",
-        pass: "roham123"
-      };
-
-      let currentUser = null;
-      let pendingUserEmail = "";
-      let captchaCode = "";
-      let targetPlanToBuy = "";
-
-      const mockUsers = [
-        {name:"سارا مجیدی",email:"sara@test.com",plan:"پریمیوم",job:"گرافیست"},
-        {name:"امیر علیپور",email:"amir@test.com",plan:"پریمیوم",job:"برنامه‌نویس"},
-        {name:"رضا احمدی",email:"reza@mail.com",plan:"رایگان",job:""},
-        {name:"مینا رحیمی",email:"mina@domain.ir",plan:"رایگان",job:""}
-      ];
-
-      const blogs = [
-        {
-          id:1,
-          title:"تحول با مدل‌های زبانی",
-          img:"https://image.pollinations.ai/prompt/ai%20brain%20neural%20network%20blue%20violet?seed=1&width=600&height=400&nologo=true",
-          text:"مدل‌های زبانی بزرگ با آموزش روی حجم زیادی از متن، الگوهای زبان را یاد می‌گیرند و می‌توانند متن را خلاصه، بازنویسی، ترجمه و تحلیل کنند. کیفیت پاسخ به زمینه، دستور روشن و بررسی خروجی وابسته است."
-        },
-        {
-          id:2,
-          title:"خلق تصاویر با هوش مصنوعی",
-          img:"https://image.pollinations.ai/prompt/digital%20art%20blue%20violet%20AI?seed=2&width=600&height=400&nologo=true",
-          text:"تولید تصویر از متن زمانی نتیجهٔ بهتری می‌دهد که سوژه، ترکیب‌بندی، نور، سبک و محدودیت‌ها را روشن بنویسید. با تغییر مرحله‌ای prompt می‌توان خروجی را دقیق‌تر کرد."
-        },
-        {
-          id:3,
-          title:"چرا دارک مود؟",
-          img:"https://image.pollinations.ai/prompt/dark%20mode%20blue%20violet%20glassmorphism?seed=3&width=600&height=400&nologo=true",
-          text:"حالت تاریک در محیط کم‌نور تجربهٔ آرام‌تری ایجاد می‌کند. برای طراحی مناسب باید کنتراست متن، سطح کارت‌ها، فاصله‌ها و اندازهٔ فونت به‌درستی تنظیم شوند."
-        },
-        {
-          id:4,
-          title:"امنیت در Single Page Apps",
-          img:"https://image.pollinations.ai/prompt/cyber%20security%20blue%20violet%20padlock?seed=4&width=600&height=400&nologo=true",
-          text:"کپچا و کنترل‌های سمت کاربر به‌تنهایی امنیت کامل ایجاد نمی‌کنند. نشست‌ها، مجوزها، اعتبارسنجی ورودی و داده‌های حساس باید روی سرور و HTTPS بررسی شوند."
-        },
-        {
-          id:5,
-          title:"آینده دستیارهای صوتی",
-          img:"https://image.pollinations.ai/prompt/futuristic%20voice%20assistant%20blue%20violet%20waves?seed=5&width=600&height=400&nologo=true",
-          text:"دستیارهای صوتی از تشخیص گفتار، درک زبان و تولید صدا استفاده می‌کنند. کیفیت میکروفون، نویز محیط و زبان روی نتیجهٔ مکالمه اثر می‌گذارد."
-        },
-        {
-          id:6,
-          title:"هوش مصنوعی و برنامه‌نویسی",
-          img:"https://image.pollinations.ai/prompt/programming%20code%20blue%20violet%20dark%20theme?seed=6&width=600&height=400&nologo=true",
-          text:"ابزارهای هوش مصنوعی در توضیح کد، ساخت نمونهٔ اولیه، نوشتن تست و پیدا کردن خطا مفیدند؛ اما خروجی باید از نظر امنیت، وابستگی‌ها و مدیریت خطا بازبینی شود."
-        }
-      ];
-
-      document.addEventListener("DOMContentLoaded",()=>{
-        renderBlogs();
-
-        if(localStorage.getItem("theme")==="light"){
-          document.documentElement.classList.remove("dark");
-        }
-      });
-
-      function toggleTheme(){
-        const html=document.documentElement;
-
-        if(html.classList.contains("dark")){
-          html.classList.remove("dark");
-          localStorage.setItem("theme","light");
-        }else{
-          html.classList.add("dark");
-          localStorage.setItem("theme","dark");
-        }
-      }
-
-      function showToast(message,type="info"){
-        const container=document.getElementById("toast-container");
-        const toast=document.createElement("div");
-
-        toast.className=`toast ${type}`;
-        toast.innerHTML=`<span class="text-sm font-bold">${message}</span>`;
-        container.appendChild(toast);
-
-        setTimeout(()=>{
-          toast.remove();
-        },3000);
-      }
-
-      function toggleSidebar(show){
-        const sidebar=document.getElementById("sidebar");
-        const overlay=document.getElementById("sidebar-overlay");
-
-        if(show){
-          sidebar.classList.remove("translate-x-full");
-          overlay.classList.remove("hidden");
-        }else{
-          sidebar.classList.add("translate-x-full");
-          overlay.classList.add("hidden");
-        }
-      }
-
-      function openModal(id){
-        const modal=document.getElementById(id+"-modal");
-
-        if(!modal)return;
-
-        modal.classList.remove("hidden");
-
-        setTimeout(()=>{
-          modal.classList.remove("opacity-0");
-        },10);
-
-        if(id==="login"){
-          generateCaptcha();
-        }
-      }
-
-      function closeModal(id){
-        const modal=document.getElementById(id+"-modal");
-
-        if(!modal)return;
-
-        modal.classList.add("opacity-0");
-
-        setTimeout(()=>{
-          modal.classList.add("hidden");
-        },300);
-      }
-
-      function showSection(id,authRequired=false){
-        if(authRequired && !currentUser){
-          showToast("لطفاً ابتدا وارد حساب کاربری شوید.","error");
-          openModal("login");
-          return;
-        }
-
-        document.querySelectorAll("main > section").forEach(section=>{
-          section.classList.add("section-hidden");
-        });
-
-        const target=document.getElementById(`section-${id}`);
-
-        if(target){
-          target.classList.remove("section-hidden");
-        }
-
-        toggleSidebar(false);
-        window.scrollTo({top:0,behavior:"smooth"});
-
-        if(id==="dashboard"){
-          renderDashboard();
-        }
-      }
-
-      function generateCaptcha(){
-        const canvas=document.getElementById("captcha-canvas");
-        const ctx=canvas.getContext("2d");
-
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-
-        const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-        captchaCode=Array.from({length:5})
-          .map(()=>chars[Math.floor(Math.random()*chars.length)])
-          .join("");
-
-        ctx.font="bold 22px monospace";
-        ctx.fillStyle=document.documentElement.classList.contains("dark")?"#fff":"#000";
-        ctx.textAlign="center";
-        ctx.textBaseline="middle";
-
-        for(let i=0;i<5;i++){
-          ctx.save();
-          ctx.translate(30+(i*25),22);
-          ctx.rotate((Math.random()-.5)*.5);
-          ctx.fillText(captchaCode[i],0,0);
-          ctx.restore();
-        }
-
-        ctx.beginPath();
-        ctx.moveTo(10,22);
-        ctx.lineTo(150,22);
-        ctx.strokeStyle="#2563eb";
-        ctx.lineWidth=2;
-        ctx.stroke();
-      }
-        ctx.fillText(captchaCode[i], 0, 0);
-        ctx.restore();
-      }
-    }
-
-    function handleLogin() {
-      const email = document.getElementById('login-email').value.trim();
-      const pass = document.getElementById('login-password').value;
-      const cap = document.getElementById('login-captcha').value.trim().toUpperCase();
-
-      if (cap !== captchaCode) {
-        showToast('کد تصویر اشتباه است.', 'error');
-        generateCaptcha();
-        return;
-      }
-
-      if (email === ADMIN_CRED.email && pass === ADMIN_CRED.pass) {
-        currentUser = {
-          role: 'admin',
-          name: 'رهام',
-          email,
-          plan: 'پریمیوم'
-        };
-
-        finalizeLogin();
-      } else {
-        pendingUserEmail = email;
-        closeModal('login');
-        setTimeout(() => openModal('profile'), 350);
-      }
-    }
-
-    function submitProfileSetup() {
-      const name = document.getElementById('setup-display-name').value.trim();
-
-      if (!name) {
-        showToast('وارد کردن نام الزامی است.', 'error');
-        return;
-      }
-
-      currentUser = {
-        role: 'user',
-        name,
-        email: pendingUserEmail,
-        plan: 'رایگان'
-      };
-
-      closeModal('profile');
-      finalizeLogin();
-    }
-
-    function finalizeLogin() {
-      closeModal('login');
-
-      showToast(`سلام ${currentUser.name}! با موفقیت وارد شدید.`, 'success');
-
-      document.getElementById('header-auth-area').innerHTML = `
-        <button onclick="showSection('dashboard', true)"
-          class="bg-brand text-white px-6 py-2.5 rounded-2xl font-bold shadow-lg text-sm flex items-center gap-2">
-          <i class="fa-solid fa-user-circle"></i>
-          پنل کاربری
-        </button>
-      `;
-
-      document.getElementById('sidebar-profile').classList.remove('hidden');
-      document.getElementById('sidebar-logout').classList.remove('hidden');
-
-      document.getElementById('sidebar-user-name').innerText = currentUser.name;
-      document.getElementById('sidebar-user-role').innerText =
-        currentUser.role === 'admin' ? 'مدیر کل' : 'کاربر عادی';
-
-      setTimeout(() => showSection('dashboard', true), 300);
-    }
-
-    function handleLogout() {
-      currentUser = null;
-
-      document.getElementById('header-auth-area').innerHTML = `
-        <button onclick="openModal('login')"
-          class="flex items-center gap-2 glass-panel border border-brand/30 text-gray-800 dark:text-white px-6 py-2.5 rounded-2xl text-sm font-bold">
-          <i class="fa-solid fa-arrow-right-to-bracket"></i>
-          ورود به پلتفرم
-        </button>
-      `;
-
-      document.getElementById('sidebar-profile').classList.add('hidden');
-      document.getElementById('sidebar-logout').classList.add('hidden');
-
-      showSection('home');
-      showToast('از حساب خارج شدید.', 'info');
-    }
-
-    function renderDashboard() {
-      if (!currentUser) return;
-
-      const userDashboard = document.getElementById('user-dashboard');
-      const adminDashboard = document.getElementById('admin-dashboard');
-
-      if (currentUser.role === 'admin') {
-        document.getElementById('dash-main-title').innerText = 'پنل مدیریت سایت';
-
-        userDashboard.classList.add('hidden');
-        adminDashboard.classList.remove('hidden');
-        adminDashboard.classList.add('flex');
-
-        const premiumTable = document.getElementById('admin-table-premium');
-        const freeTable = document.getElementById('admin-table-free');
-
-        premiumTable.innerHTML = '';
-        freeTable.innerHTML = '';
-
-        mockUsers.forEach(user => {
-          if (user.plan === 'پریمیوم') {
-            premiumTable.innerHTML += `
-              <tr class="border-b border-gray-200 dark:border-white/5">
-                <td class="px-6 py-4 font-bold dark:text-white text-gray-900">
-                  ${user.name}
-                </td>
-                <td class="px-6 py-4 font-mono text-xs text-left" dir="ltr">
-                  ${user.email}
-                </td>
-                <td class="px-6 py-4 text-brand">
-                  ${user.job}
-                </td>
-              </tr>
-            `;
-          } else {
-            freeTable.innerHTML += `
-              <tr class="border-b border-gray-200 dark:border-white/5">
-                <td class="px-6 py-4 font-bold dark:text-white text-gray-900">
-                  ${user.name}
-                </td>
-                <td class="px-6 py-4 font-mono text-xs text-left" dir="ltr">
-                  ${user.email}
-                </td>
-              </tr>
-            `;
-          }
-        });
-      } else {
-        document.getElementById('dash-main-title').innerText = 'داشبورد کاربری';
-
-        adminDashboard.classList.add('hidden');
-        adminDashboard.classList.remove('flex');
-        userDashboard.classList.remove('hidden');
-
-        document.getElementById('udash-name').innerText = currentUser.name;
-        document.getElementById('udash-email').innerText = currentUser.email;
-        document.getElementById('udash-plan').innerText = currentUser.plan;
-      }
-    }
-
-    function applyDiscount() {
-      const input = document.getElementById('discount-input');
-
-      if (input.value.trim().length > 0) {
-        showToast('کد تخفیف اعمال نشد یا منقضی شده است.', 'error');
-        input.value = '';
-      }
-    }
-
-    function openPaymentModal(plan, price) {
-      if (!currentUser) {
-        showToast('ابتدا وارد شوید.', 'error');
-        return;
-      }
-
-      if (currentUser.plan === 'پریمیوم' || currentUser.role === 'admin') {
-        showToast('شما قبلاً دسترسی کامل دارید.', 'info');
-        return;
-      }
-
-      targetPlanToBuy = plan;
-      document.getElementById('payment-amount').innerText =
-        `مبلغ: ${price} تومان`;
-
-      document.getElementById('payment-form').reset();
-      openModal('payment');
-    }
-
-    function requestOTP() {
-      const button = document.getElementById('otp-btn');
-
-      button.disabled = true;
-
-      let time = 60;
-      button.innerText = `${time} ثانیه`;
-
-      showToast('رمز پویا با موفقیت ارسال شد.', 'success');
-
-      const interval = setInterval(() => {
-        time--;
-        button.innerText = `${time} ثانیه`;
-
-        if (time < 0) {
-          clearInterval(interval);
-          button.disabled = false;
-          button.innerText = 'دریافت رمز';
-        }
-      }, 1000);
-    }
-
-    function processPayment() {
-      const button = document.getElementById('pay-submit-btn');
-      const oldText = button.innerHTML;
-
-      button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> در حال پردازش';
-
-      setTimeout(() => {
-        button.innerHTML = oldText;
-        closeModal('payment');
-
-        currentUser.plan = targetPlanToBuy;
-
-        showToast(
-          `پرداخت موفق! پلن ${targetPlanToBuy} فعال شد.`,
-          'success'
-        );
-
-        renderDashboard();
-      }, 1500);
-    }
-
-    function renderBlogs() {
-      const grid = document.getElementById('blog-grid');
-
-      grid.innerHTML = blogs.map(blog => `
-        <div class="glass-panel rounded-[2rem] overflow-hidden flex flex-col hover:-translate-y-2 transition-transform duration-300">
-          <img src="${blog.img}" class="w-full h-48 object-cover">
-
-          <div class="p-6 flex flex-col flex-1">
-            <h3 class="font-bold text-xl mb-3 dark:text-white text-gray-900">
-              ${blog.title}
-            </h3>
-
-            <p class="text-sm dark:text-slate-400 text-gray-600 mb-4 line-clamp-3">
-              ${blog.text}
-            </p>
-
-            <button onclick="openBlogModal(${blog.id})"
-              class="mt-auto text-brand font-bold text-sm flex justify-between items-center w-full">
-              مشاهده مطلب
-              <i class="fa-solid fa-arrow-left"></i>
-            </button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function openBlogModal(id) {
-      const blog = blogs.find(item => item.id === id);
-
-      document.getElementById('blog-modal-title').innerText = blog.title;
-      document.getElementById('blog-modal-img').src = blog.img;
-      document.getElementById('blog-modal-body').innerText = blog.text;
-
-      openModal('blog');
-    }
-
-    function clearChat() {
-      document.getElementById('chat-history').innerHTML = `
-        <div class="flex w-full justify-start">
-          <div class="max-w-[85%] md:max-w-[70%] glass-panel rounded-3xl rounded-tr-sm p-5 text-sm shadow-lg">
-            محیط پاکسازی شد. آمادهٔ دریافت درخواست جدید هستم.
-          </div>
-        </div>
-      `;
-    }
-
-    function appendMessage(role, text, isImage = false) {
-      const box = document.getElementById('chat-history');
-      const isUser = role === 'user';
-
-      let content = text;
-
-      if (isImage) {
-        content = `
-          <img src="${text}"
-            class="w-full rounded-xl mt-2 border border-white/10 shadow-lg">
-        `;
-      }
-
-      box.innerHTML += `
-        <div class="flex w-full ${isUser ? 'justify-end' : 'justify-start'}">
-          <div class="max-w-[85%] md:max-w-[70%] glass-panel rounded-3xl p-5 text-sm shadow-lg">
-            ${
-              !isUser
-                ? `<div class="text-xs text-brand font-bold mb-2">
-                     <i class="fa-solid fa-robot"></i> رهام AI
-                   </div>`
-                : ''
-            }
-
-            <div class="leading-loose whitespace-pre-wrap">
-              ${content}
-            </div>
-          </div>
-        </div>
-      `;
-
-      box.scrollTop = box.scrollHeight;
-    }
-
-    async function handleAiAction() {
-      const input = document.getElementById('chat-input');
-      const prompt = input.value.trim();
-
-      if (!prompt) return;
-
-      input.value = '';
-      appendMessage('user', prompt);
-
-      const typingId = 'typing-' + Date.now();
-
-      document.getElementById('chat-history').innerHTML += `
-        <div id="${typingId}" class="flex w-full justify-start">
-          <div class="glass-panel rounded-3xl p-4 flex items-center h-12">
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
-          </div>
-        </div>
-      `;
-
-      const imageWords = ['عکس', 'تصویر', 'بکش', 'بساز', 'طراحی'];
-      const wantsImage = imageWords.some(word => prompt.includes(word));
-
-      if (wantsImage) {
-        const safePrompt = encodeURIComponent(
-          prompt + ' masterpiece 4k blue violet cinematic lighting'
-        );
-
-        const imageUrl =
-          `https://image.pollinations.ai/prompt/${safePrompt}?nologo=true&seed=${Math.floor(Math.random() * 1000)}`;
-
-        setTimeout(() => {
-          document.getElementById(typingId)?.remove();
-          appendMessage('bot', 'تصویر شما آماده شد:');
-          appendMessage('bot', imageUrl, true);
-        }, 1500);
-
-        return;
-      }
-
-      setTimeout(() => {
-        document.getElementById(typingId)?.remove();
-
-        appendMessage(
-          'bot',
-          'درخواست شما دریافت شد. برای اتصال به مدل زبانی واقعی، کلید API را در سرور امن تنظیم کنید.'
-        );
-      }, 1000);
-    }
-  </script>
+<body>
+<div class="app">
+<aside id="menu">
+<div class="logo">رهام <b>AI</b></div>
+<nav>
+<button onclick="showPage('home')">⌂ داشبورد</button>
+<button onclick="showPage('assistant')">✦ دستیار هوش مصنوعی</button>
+<button onclick="showPage('blogs')">▣ وبلاگ‌ها</button>
+<button onclick="showPage('plans')">اشتراک‌ها</button>
+<button onclick="showPage('admin')">پنل مدیریت</button>
+<button onclick="toggleTheme()">تغییر تم روشن/تاریک</button>
+<button id="logoutBtn" onclick="logout()" style="display:none">خروج از حساب</button>
+</nav>
+</aside>
+
+<main>
+<header class="top">
+<button class="mobile" onclick="document.getElementById('menu').classList.toggle('open')">☰</button>
+<h2 id="title">داشبورد هوشمند</h2>
+<div>
+<span id="status">مهمان</span>
+<button onclick="openLogin()">ورود</button>
+</div>
+</header>
+
+<section id="home" class="active">
+<div class="hero">
+<div class="panel">
+<p>پلتفرم هوش مصنوعی نسل جدید</p>
+<h1>ایده‌هایت را با <span class="gradient">رهام</span> اجرا کن</h1>
+<p>گفت‌وگو، تولید محتوا، آموزش، برنامه‌نویسی و تولید تصویر در یک محیط شیشه‌ای و سریع.</p>
+<button onclick="showPage('assistant')">شروع کار</button>
+</div>
+<div class="panel">
+<h2>رهام</h2>
+<p>سازنده پلتفرم هوش مصنوعی</p>
+<h3>۱۵ سال</h3>
+<p>دسترسی شبانه‌روزی</p>
+</div>
+</div>
+<div class="cards">
+<div class="panel card"><h3>گفت‌وگوی هوشمند</h3><p>پاسخ‌گویی و تولید محتوای فارسی.</p></div>
+<div class="panel card"><h3>ساخت تصویر</h3><p>تبدیل ایده‌های متنی به تصویر.</p></div>
+<div class="panel card"><h3>کمک برنامه‌نویسی</h3><p>توضیح کد و رفع خطا.</p></div>
+</div>
+</section>
+
+<section id="assistant">
+<h2>دستیار هوش مصنوعی</h2>
+<div class="panel chat">
+<div id="chatLog"><div class="msg bot">سلام! چطور کمکتان کنم؟</div></div>
+<form onsubmit="event.preventDefault();sendMessage()">
+<input id="chatInput" placeholder="درخواست خود را بنویسید">
+<button>ارسال</button>
+</form>
+</div>
+</section>
+
+<section id="blogs">
+<h2>وبلاگ و آموزش</h2>
+<div class="blogs">
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/blue%20violet%20AI?width=700&height=400&nologo=true"><h3>مدل‌های زبانی بزرگ</h3><p>مدل‌های زبانی برای خلاصه‌سازی، ترجمه، تحلیل و تولید محتوا استفاده می‌شوند. کیفیت پاسخ به دستور دقیق و زمینه مناسب وابسته است.</p></article>
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/AI%20image%20creation?width=700&height=400&nologo=true"><h3>ساخت تصویر با هوش مصنوعی</h3><p>با تعیین سوژه، نور، سبک و ترکیب‌بندی می‌توانید تصاویر دقیق‌تری بسازید و با اصلاح مرحله‌ای نتیجه را بهتر کنید.</p></article>
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/cybersecurity%20blue?width=700&height=400&nologo=true"><h3>امنیت وب</h3><p>HTTPS، اعتبارسنجی ورودی، نشست امن و کنترل دسترسی برای ساخت برنامه قابل اعتماد ضروری هستند.</p></article>
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/AI%20coding?width=700&height=400&nologo=true"><h3>هوش مصنوعی و برنامه‌نویسی</h3><p>دستیار هوشمند می‌تواند کد را توضیح دهد، خطاها را پیدا کند و نمونه اولیه بسازد؛ اما تست نهایی ضروری است.</p></article>
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/AI%20education?width=700&height=400&nologo=true"><h3>یادگیری با AI</h3><p>از هوش مصنوعی برای ساخت برنامه مطالعه، تمرین و توضیح مفاهیم دشوار استفاده کنید و مطالب را بررسی کنید.</p></article>
+<article class="panel blog"><img src="https://image.pollinations.ai/prompt/futuristic%20AI%20assistant?width=700&height=400&nologo=true"><h3>آینده دستیارهای شخصی</h3><p>دستیارهای آینده متن، تصویر، برنامه‌ریزی و ابزارهای روزمره را در یک جریان کاری ترکیب خواهند کرد.</p></article>
+</div>
+</section>
+
+<section id="plans">
+<h2>اشتراک‌ها</h2>
+<div class="plans">
+<div class="panel plan"><h2>رایگان</h2><p>گفت‌وگوی پایه و وبلاگ‌ها</p><button>فعال</button></div>
+<div class="panel plan"><h2>پریمیوم</h2><p>دسترسی بیشتر و تولید تصویر</p><button onclick="buy()">ارتقا</button></div>
+<div class="panel plan"><h2>حرفه‌ای</h2><p>دسترسی نامحدود و پشتیبانی</p><button onclick="buy()">خرید</button></div>
+</div>
+</section>
+
+<section id="admin">
+<div class="panel">
+<h2>پنل مدیریت</h2>
+<p id="account"></p>
+<div id="userList"></div>
+</div>
+</section>
+</main>
+</div>
+
+<div id="loginModal" class="modal">
+<div class="panel modal-box">
+<button onclick="closeLogin()">×</button>
+<h2>ورود مهمان</h2>
+<input id="phone" type="tel" placeholder="شماره موبایل 09123456789">
+<input id="name" placeholder="نام شما">
+<button onclick="login()">ورود / ثبت‌نام</button>
+<p id="loginMsg"></p>
+</div>
+</div>
+
+<script>
+let currentUser=null;
+const users=JSON.parse(localStorage.getItem("roham_users")||"[]");
+
+function showPage(id){
+ document.querySelectorAll("section").forEach(x=>x.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.getElementById("title").textContent={
+  home:"داشبورد هوشمند",assistant:"دستیار هوش مصنوعی",
+  blogs:"وبلاگ و آموزش",plans:"اشتراک‌ها",admin:"پنل مدیریت"
+ }[id];
+ document.getElementById("menu").classList.remove("open");
+ if(id==="admin")renderUsers();
+}
+function toggleTheme(){document.body.classList.toggle("light")}
+function openLogin(){document.getElementById("loginModal").classList.add("show")}
+function closeLogin(){document.getElementById("loginModal").classList.remove("show")}
+function login(){
+ const phone=document.getElementById("phone").value.trim();
+ const name=document.getElementById("name").value.trim();
+ if(!/^09\d{9}$/.test(phone)){
+  document.getElementById("loginMsg").textContent="شماره موبایل معتبر وارد کنید.";
+  return;
+ }
+ const old=users.find(x=>x.phone===phone);
+ currentUser=old||{name:name||"کاربر مهمان",phone,plan:"رایگان"};
+ if(!old)users.push(currentUser);
+ localStorage.setItem("roham_users",JSON.stringify(users));
+ document.getElementById("status").textContent=currentUser.name;
+ document.getElementById("logoutBtn").style.display="block";
+ document.getElementById("account").textContent=currentUser.name+" | "+currentUser.phone;
+ closeLogin();
+}
+function logout(){currentUser=null;document.getElementById("status").textContent="مهمان";document.getElementById("logoutBtn").style.display="none"}
+function renderUsers(){
+ document.getElementById("userList").innerHTML=users.length
+ ?users.map(x=>`<div class="user-card"><b>${x.name}</b><br>شماره: ${x.phone}<br>اشتراک: ${x.plan}</div>`).join("")
+ :"هنوز کاربری ثبت نشده است.";
+}
+function sendMessage(){
+ const input=document.getElementById("chatInput"),text=input.value.trim(),log=document.getElementById("chatLog");
+ if(!text)return;
+ log.innerHTML+=`<div class="msg user">${text}</div>`;
+ let answer="درخواست شما دریافت شد و در حال آماده‌سازی پاسخ هستم.";
+ if(text.includes("سلام"))answer="سلام! من دستیار رهام هستم.";
+ if(text.includes("کد"))answer="می‌توانم برای HTML، CSS و JavaScript راهنمایی کنم.";
+ if(text.includes("وبلاگ"))answer="در بخش وبلاگ، مطالب آموزشی کامل قرار دارد.";
+ if(/عکس|تصویر|بساز|بکش/.test(text)){
+  const url="https://image.pollinations.ai/prompt/"+encodeURIComponent(text)+"?width=768&height=512&nologo=true";
+  answer=`تصویر آماده شد:<br><img src="${url}" style="max-width:100%;border-radius:15px">`;
+ }
+ setTimeout(()=>log.innerHTML+=`<div class="msg bot">${answer}</div>`,400);
+ input.value="";
+}
+function buy(){if(!currentUser)openLogin();else alert("درگاه پرداخت در نسخه نمایشی است.")}
+</script>
 </body>
 </html>
